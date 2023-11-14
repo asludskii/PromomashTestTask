@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/PromomashTestTask/dev.db
+/PromomashTestTask/dev.db-shm
+/PromomashTestTask/dev.db-wal

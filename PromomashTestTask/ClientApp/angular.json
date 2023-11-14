@@ -129,5 +129,8 @@
       }
     }
   },
-  "defaultProject": "PromomashTestTask"
+  "defaultProject": "PromomashTestTask",
+  "cli": {
+    "analytics": false
+  }
 }
