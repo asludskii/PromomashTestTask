@@ -1,9 +1,15 @@
+using System.Reflection;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using PromomashTestTask.Data;
+using PromomashTestTask.Data.Repositories;
+using PromomashTestTask.Data.Repositories.Interfaces;
 using PromomashTestTask.Data.SQLite;
-using PromomashTestTask.Identity;
+using PromomashTestTask.Data.UnitOfWork;
 using PromomashTestTask.Models;
+using PromomashTestTask.Validation.Identity;
 
 namespace PromomashTestTask
 {
@@ -17,6 +23,9 @@ namespace PromomashTestTask
             ConfigureDbContext(builder.Configuration, builder.Services);
             ConfigureIdentity(builder.Services);
             ConfigureServices(builder.Services);
+            ConfigureFluentValidation(builder.Services);
+            ConfigureCaching(builder.Services);
+            ConfigureLogging(builder.Services);
 
             if (builder.Environment.IsDevelopment())
             {
@@ -49,13 +58,34 @@ namespace PromomashTestTask
             app.MapRazorPages();
             app.MapFallbackToFile("index.html");
 
+            app.UseResponseCaching();
+
             app.Run();
+        }
+
+        private static void ConfigureLogging(IServiceCollection services)
+        {
+            services.AddLogging();
+        }
+
+        private static void ConfigureCaching(IServiceCollection services)
+        {
+            services.AddResponseCaching(options =>
+            {
+                options.UseCaseSensitivePaths = false;
+            });
+        }
+
+        private static void ConfigureFluentValidation(IServiceCollection services)
+        {
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient);
         }
 
         private static void ApplyMigrations(IServiceProvider services)
         {
             using var scope = services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContextBase>();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             dbContext.Database.Migrate();
         }
 
@@ -72,6 +102,14 @@ namespace PromomashTestTask
                     options.SignIn.RequireConfirmedAccount = false;
                     options.SignIn.RequireConfirmedEmail = false;
                     options.SignIn.RequireConfirmedPhoneNumber = false;
+
+                    // Password validation is handled in a dedicated class, so all default checks are turned off
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequiredLength = 0;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequiredUniqueChars = 0;
                 })
                 .AddEntityFrameworkStores<SqLiteAppDbContext>()
                 .AddPasswordValidator<PasswordValidator>();
@@ -91,7 +129,7 @@ namespace PromomashTestTask
             {
                 case "SQLite":
                 {
-                    services.AddDbContext<AppDbContextBase, SqLiteAppDbContext>();
+                    services.AddDbContext<AppDbContext, SqLiteAppDbContext>();
                     break;
                 }
                 default:
@@ -100,14 +138,20 @@ namespace PromomashTestTask
                         $"Invalid DatabaseConnection config value: {dbConnection}.");
                 }
             }
-
-
         }
 
         private static void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            // Add base unit of work
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Add repositories
+            services.AddScoped<IRepository<Country>, CountryRepository>();
+            services.AddScoped<IProvinceRepository, ProvinceRepository>();
+            services.AddScoped<IPolicyVersionRepository, PolicyVersionRepository>();
         }
     }
 }

@@ -8,7 +8,7 @@ public class Country
 
     #region Relations
 
-    public ICollection<Province> Provinces { get; set; }
+    public ICollection<Province>? Provinces { get; set; }
 
     #endregion
 }

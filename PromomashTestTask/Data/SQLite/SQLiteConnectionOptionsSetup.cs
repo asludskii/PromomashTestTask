@@ -30,30 +30,35 @@ public class SqLiteConnectionOptionsSetup : IConfigureOptions<SqLiteConnectionOp
         var dataSource = sqliteSection.GetValue<string>("DataSource");
 
         if (string.IsNullOrWhiteSpace(dataSource))
-            throw new ArgumentNullException(dataSource,
-                "DataSource can't be empty. Provide a valid file path or ':memory:'.");
-
-        if (!dataSource.Equals(":memory:"))
         {
-            try
-            {
-                // If new FileInfo fails, there are problems with this file path
-                var _ = new FileInfo(dataSource).FullName;
-            }
-            catch (PathTooLongException)
-            {
-                throw new ArgumentException("DataSource path is too long.");
-            }
-            catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException)
-            {
-                throw new ArgumentException("Access denied to DataSource path", ex);
-            }
-            catch  (Exception ex)
-            {
-                throw new ArgumentException("DataSource path is invalid.", ex);
-            }
+            throw new ArgumentNullException(dataSource,
+                "DataSource can't be empty. Provide a valid file path..");
         }
-        
+
+        if (dataSource.Equals(":memory:", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new NotSupportedException(
+                "In-memory database for SQLite context is not supported. Apparently, it's transient :C");
+        }
+
+        try
+        {
+            // If new FileInfo fails, there are problems with this file path
+            var _ = new FileInfo(dataSource).FullName;
+        }
+        catch (PathTooLongException)
+        {
+            throw new ArgumentException("DataSource path is too long.");
+        }
+        catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException)
+        {
+            throw new ArgumentException("Access denied to DataSource path", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("DataSource path is invalid.", ex);
+        }
+
         sqliteSection.Bind(options);
     }
 

@@ -13,7 +13,7 @@ namespace PromomashTestTask.Data;
 /// Base DbContext implementation for this application.
 /// All configuration agnostic of implementation should happen here.
 /// </summary>
-public abstract class AppDbContextBase : ApiAuthorizationDbContext<ApplicationUser>
+public abstract class AppDbContext : ApiAuthorizationDbContext<ApplicationUser>
 {
     /// <summary>
     /// A collection of valid country names.
@@ -29,7 +29,7 @@ public abstract class AppDbContextBase : ApiAuthorizationDbContext<ApplicationUs
     /// </summary>
     public DbSet<PolicyVersion> PolicyVersions { get; set; }
 
-    protected AppDbContextBase(DbContextOptions options, IOptions<OperationalStoreOptions> operationalStoreOptions) 
+    protected AppDbContext(DbContextOptions options, IOptions<OperationalStoreOptions> operationalStoreOptions) 
         : base(options, operationalStoreOptions)
     {
     }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PromomashTestTask.Data.SQLite;
 
@@ -10,9 +11,10 @@ using PromomashTestTask.Data.SQLite;
 namespace PromomashTestTask.Data.Migrations.SQLiteMigrations
 {
     [DbContext(typeof(SqLiteAppDbContext))]
-    partial class SqLiteAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231115212319_Seed-Data-Placeholder-Policy")]
+    partial class SeedDataPlaceholderPolicy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.24");
@@ -100,7 +102,7 @@ namespace PromomashTestTask.Data.Migrations.SQLiteMigrations
 
                     b.HasIndex("Use");
 
-                    b.ToTable("Keys", (string)null);
+                    b.ToTable("Keys");
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.PersistedGrant", b =>
@@ -388,7 +390,7 @@ namespace PromomashTestTask.Data.Migrations.SQLiteMigrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Countries", (string)null);
+                    b.ToTable("Countries");
 
                     b.HasComment("A collection of valid country names.");
 
@@ -423,7 +425,7 @@ namespace PromomashTestTask.Data.Migrations.SQLiteMigrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PolicyVersions", (string)null);
+                    b.ToTable("PolicyVersions");
 
                     b.HasComment("Terms of service policy versions.");
 
@@ -456,7 +458,7 @@ namespace PromomashTestTask.Data.Migrations.SQLiteMigrations
                     b.HasIndex("CountryId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Provinces", (string)null);
+                    b.ToTable("Provinces");
 
                     b.HasComment("Top-level administrative subdivisions of countries.");
 
