@@ -36,6 +36,13 @@ namespace PromomashTestTask
 
             ApplyMigrations(app.Services);
 
+            app.UseCors(policyBuilder =>
+            {
+                policyBuilder.AllowAnyOrigin();
+                policyBuilder.AllowAnyHeader();
+                policyBuilder.AllowAnyMethod();
+            });
+
             if (!app.Environment.IsDevelopment())
             {
                 app.UseHttpsRedirection();

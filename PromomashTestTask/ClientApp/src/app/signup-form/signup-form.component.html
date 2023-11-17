@@ -1,0 +1,37 @@
+<form class="form-group" [formGroup]="formData">
+    <div [ngClass]="{'collapse': formStep !== 1}">
+        <label for="login">Login</label>
+        <input type="text" class="form-control" id="login" formControlName="login" />
+        <br />
+
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" formControlName="password" />
+        <br />
+
+        <label for="confirmPassword">Confirm password</label>
+        <input type="password" class="form-control" id="confirmPassword" formControlName="confirmPassword" />
+        <br />
+
+        <label for="acceptPolicy">Work for food</label>
+        <input type="checkbox" class="form-control" id="acceptPolicy" formControlName="policyAccepted" />
+        <br />
+    </div>
+
+    <div [ngClass]="{'collapse': formStep !== 2}">
+        <label for="country">Country</label>
+        <select class="form-control" id="country" formControlName="countryid"
+            (ngModelChange)="onCountrySelect()">
+            <option *ngFor="let country of this.countries" [ngValue]="country.id">{{country.name}}</option>
+        </select>
+        <br />
+
+        <label for="province">Province</label>
+        <select class="form-control" id="province" formControlName="provinceid">
+            <option *ngFor="let province of this.provinces" [value]="province.id">{{province.name}}</option>
+        </select>
+        <br />
+    </div>
+    <button (click)="onSubmitClick()" type="button" name="submitButton">Next</button>
+</form>
+
+Form value: {{formData.value | json}}
